@@ -1,0 +1,22 @@
+body {
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    max-width: 700px;
+    margin: 4rem auto;
+    padding: 0 1rem;
+}
+
+button {
+    padding: 0.75rem 1rem;
+    margin-right: 0.5rem;
+}
+
+#status {
+    font-weight: bold;
+}
+
+#transcription {
+    
+    padding: 1rem;
+    border: 1px solid #ccc;
+	border-radius: 3px;
+}
