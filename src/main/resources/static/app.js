@@ -97,7 +97,7 @@ async function uploadAudio(audioBlob) {
     formData.append(
         "file",
         audioBlob,
-        "test321r5ndwjfsdj.webm"
+        "test.webm"
     );
 
     try {
