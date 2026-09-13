@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 
 @RestController
 public class TranscriptionController {
@@ -22,10 +25,12 @@ public class TranscriptionController {
     public ResponseEntity<Map<String, String>> transcribe(
             @RequestPart("file") MultipartFile file) {
 
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Audio file is empty"));
-        }
+    	if (file.isEmpty()) {
+    	    throw new ResponseStatusException(
+    	            HttpStatus.BAD_REQUEST,
+    	            "Audio file is empty."
+    	    );
+    	}
 
         OpenAiTranscriptionResponse response =
                 transcriptionService.transcribe(file);

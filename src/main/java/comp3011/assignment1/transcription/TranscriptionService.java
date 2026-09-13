@@ -9,6 +9,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 import comp3011.assignment1.stats.UsageStats;
+import org.springframework.web.client.RestClientException;
+
 
 
 @Service
@@ -55,15 +57,30 @@ public class TranscriptionService {
                 .body(OpenAiTranscriptionResponse.class);
 
         if (response == null || response.text() == null) {
-            throw new IllegalStateException(
-                    "OpenAI returned an invalid transcription response"
+            throw new RestClientException(
+                    "The transcription service returned an invalid response."
             );
         }
-        
-        
+
+        OpenAiTranscriptionResponse.Usage usage = response.usage();
+
+        if (usage == null
+                || usage.inputTokens() == null
+                || usage.outputTokens() == null) {
+            throw new RestClientException(
+                    "the transcription service returned missing token usage."
+            );
+        }
+
+        if (usage.inputTokens() < 0 || usage.outputTokens() < 0) {
+            throw new RestClientException(
+                    "TEST"
+            );
+        }
+
         usageStats.add(
-                response.usage().inputTokens(),
-                response.usage().outputTokens()
+                usage.inputTokens(),
+                usage.outputTokens()
         );
 
         return response;

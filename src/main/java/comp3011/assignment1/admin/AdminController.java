@@ -1,6 +1,8 @@
 package comp3011.assignment1.admin;
 
-import java.lang.management.ManagementFactory;
+import java.time.temporal.ChronoUnit;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 
 
 import comp3011.assignment1.api.ErrorResponse;
@@ -23,13 +25,19 @@ public class AdminController {
 
 	
 	
-    private Instant serverStart = Instant.ofEpochMilli(ManagementFactory.getRuntimeMXBean().getStartTime());
+	private volatile Instant serverStart = Instant.now();
 
     
     private final ShutdownService shutdownService;
     
     public AdminController(ShutdownService shutdownService) {
         this.shutdownService = shutdownService;
+    }
+    
+    
+    @EventListener(ApplicationReadyEvent.class)
+    public void recordServerStart() {
+        serverStart = Instant.now().truncatedTo(ChronoUnit.MILLIS);
     }
     
     
@@ -44,10 +52,10 @@ public class AdminController {
     @PostMapping("/shutdown")
     public ResponseEntity<?> shutdownTheServer() {
         if(!shutdownService.requestStop()) {
-        	ErrorResponse e = new ErrorResponse(Instant.now(), 409, "Conflict", "Shutdown already happening", "/api/v1/admin/shutdown");
+        	ErrorResponse e = new ErrorResponse(Instant.now(), 409, "Conflict", "Graceful shutdown is already in progress.", "/api/v1/admin/shutdown");
         	return ResponseEntity.status(HttpStatus.CONFLICT).body(e);
         } else {
-        	return ResponseEntity.accepted().body(new ShutdownResponse("worked"));
+        	return ResponseEntity.accepted().body(new ShutdownResponse("Graceful shutdown requested."));
         }
     }
 }
