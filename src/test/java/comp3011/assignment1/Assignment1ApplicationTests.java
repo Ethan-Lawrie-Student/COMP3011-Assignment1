@@ -3,7 +3,7 @@ package comp3011.assignment1;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@SpringBootTest(properties = "openai.api-key=TEST")
 class Assignment1ApplicationTests {
 
 	@Test

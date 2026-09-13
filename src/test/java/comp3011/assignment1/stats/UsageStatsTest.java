@@ -5,6 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+
 class UsageStatsTest {
 
     @Test
@@ -57,4 +65,36 @@ class UsageStatsTest {
         assertEquals(10L, result.inputTokens());
         assertEquals(4L, result.outputTokens());
     }
+    
+    
+    
+    @Test
+    void keepsAllUpdatesWhenRunConcurrently() throws Exception {
+        UsageStats stats = new UsageStats();
+
+        ExecutorService workers = Executors.newFixedThreadPool(20);
+        List<Future<?>> tasks = new ArrayList<>();
+
+        try {
+            for (int taskNumber = 0; taskNumber < 500; taskNumber++) {
+                tasks.add(
+                        workers.submit(() -> stats.add(3, 2))
+                );
+            }
+
+            for (Future<?> task : tasks) {
+                task.get(10, TimeUnit.SECONDS);
+            }
+
+            GlobalStatsResponse result = stats.snapshot();
+
+            assertEquals(1500L, result.inputTokens());
+            assertEquals(1000L, result.outputTokens());
+
+        } finally {
+            workers.shutdownNow();
+        }
+    }
+    
+    
 }
