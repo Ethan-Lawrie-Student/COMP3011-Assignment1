@@ -34,6 +34,8 @@ class TranscriptionConcurrencyTest {
     @Test
     void handles250RequestsAtTheSameTime() throws Exception {
         int requestCount = 250;
+        
+        // requests get started and prepared for all 250 to overlap
 
         CountDownLatch requestsStarted =
                 new CountDownLatch(requestCount);

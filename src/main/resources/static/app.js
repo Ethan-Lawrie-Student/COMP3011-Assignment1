@@ -137,7 +137,7 @@ function resetRecorder() {
     startButton.disabled = false;
     stopButton.disabled = true;
 
-    if (!statusElement.textContent.startsWith("Unable")) {
-        statusElement.textContent = "Ready";
-    }
+    //if (!statusElement.textContent.startsWith("Unable")) {
+    //    statusElement.textContent = "Ready";
+    //}
 }
